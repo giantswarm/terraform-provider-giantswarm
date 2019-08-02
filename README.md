@@ -76,11 +76,15 @@ export GIANTSWARM_TOKEN=TOKEN_CREATED
 `terraform import giantswarm_cluster.test YOUR_CLUSTER_ID`
 
 ### Examples
+
+- Check the simplest example (creating an Azure/AWS giantswarm cluster) 
+[example/simple-example](https://github.com/giantswarm/terraform-provider-giantswarm/tree/master/examples/simple-example)
+
 - Use terraform to create a giant swarm kubernetes cluster with a kubernetes deployment and helm chart using the terraform kubernetes and helm upstream providers.
 
-[example/giantswarm-cluster-kubernetes-helm](https://github.com/ferrandinand/terraform-provider-giantswarm/tree/master/examples/giantswarm-cluster-kubernetes-helm)
+[example/giantswarm-cluster-kubernetes-helm](https://github.com/giantswarm/terraform-provider-giantswarm/tree/master/examples/giantswarm-cluster-kubernetes-helm)
 
 
 - Use terraform to create a giant swarm kubernetes cluster in multiples environments.
 
-[example/giantswarm-multiple-environments](https://github.com/ferrandinand/terraform-provider-giantswarm/tree/master/examples/giantswarm-multiple-environments)
+[example/giantswarm-multiple-environments](https://github.com/giantswarm/terraform-provider-giantswarm/tree/master/examples/giantswarm-multiple-environments)
