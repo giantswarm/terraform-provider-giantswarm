@@ -20,10 +20,6 @@ resource "giantswarm_cluster" "test" {
   workers_min = 3 
   workers_max = 3 
 
-  worker_num_cpus = 2
-  worker_storage_size = 70.0
-  worker_memory_size = 90.0 
-
   worker_aws_ec2_instance_type = "m5.large" 
 }
 ```
