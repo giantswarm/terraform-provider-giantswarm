@@ -134,7 +134,7 @@ func TestAccCluster_Multiple(t *testing.T) {
 var whiteSpaceRegex = regexp.MustCompile("name cannot contain whitespace")
 
 func testAccCheckClusterDestroy(s *terraform.State) error {
-	apiClient := testAccProvider.Meta().(*client.WrapperV2)
+	apiClient := testAccProvider.Meta().(*client.Wrapper)
 
 	for _, rs := range s.RootModule().Resources {
 		if rs.Type != "giantswarm_cluster" {
@@ -144,7 +144,7 @@ func testAccCheckClusterDestroy(s *terraform.State) error {
 		auxParams := apiClient.DefaultAuxiliaryParams()
 		auxParams.ActivityName = "read-cluster"
 
-		_, err := apiClient.GetCluster(rs.Primary.ID, auxParams)
+		_, err := apiClient.GetClusterV4(rs.Primary.ID, auxParams)
 		if err == nil {
 			return fmt.Errorf("Alert still exists")
 		}
@@ -168,10 +168,10 @@ func testAccCheckExampleClusterExists(resource string) resource.TestCheckFunc {
 			return fmt.Errorf("No Record ID is set")
 		}
 		name := rs.Primary.ID
-		apiClient := testAccProvider.Meta().(*client.WrapperV2)
+		apiClient := testAccProvider.Meta().(*client.Wrapper)
 		auxParams := apiClient.DefaultAuxiliaryParams()
 		auxParams.ActivityName = "read-cluster"
-		_, err := apiClient.GetCluster(name, auxParams)
+		_, err := apiClient.GetClusterV4(name, auxParams)
 		if err != nil {
 			return fmt.Errorf("error fetching Cluster with resource %s. %s", resource, err)
 		}
