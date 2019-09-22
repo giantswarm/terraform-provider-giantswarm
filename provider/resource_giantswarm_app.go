@@ -2,10 +2,14 @@ package provider
 
 import (
 	"fmt"
+	"log"
+	"strings"
+	"time"
 
 	"github.com/giantswarm/gsclientgen/models"
 
 	"github.com/giantswarm/gsctl/client"
+	"github.com/hashicorp/terraform/helper/resource"
 	"github.com/hashicorp/terraform/helper/schema"
 )
 
@@ -72,7 +76,7 @@ func resourceCreateApp(d *schema.ResourceData, m interface{}) error {
 	catalog := d.Get("catalog").(string)
 	name := d.Get("name").(string)
 	namespace := d.Get("namespace").(string)
-	version := d.Get("namespace").(string)
+	version := d.Get("version").(string)
 	clusterID := d.Get("cluster_id").(string)
 	appName := d.Get("app_name").(string)
 
@@ -96,46 +100,66 @@ func resourceCreateApp(d *schema.ResourceData, m interface{}) error {
 		return fmt.Errorf("Error creating app %s", err)
 	}
 
-	//d.Set("app_name", result.Payload.Metadata.Name)
-
 	// Wait for the status to be available.
-	//stateConf := &resource.StateChangeConf{
-	//	Pending: []string{"Pending"},
-	//	Target:  []string{"Created"},
-	//	Refresh: func() (interface{}, string, error) {
-	//
-	//		resp, err := apiClient.GetAppStatus(clusterID, appName, auxParams)
-	//		if err != nil {
-	//			log.Printf("Error on Cluster status refresh: %s", err)
-	//			return nil, "", err
-	//		}
-	//
-	//		status := "Pending"
-	//
-	//		if resp == "DEPLOYED" {
-	//			status = "Created"
-	//		}
-	//
-	//		return resp, status, nil
-	//	},
-	//	Timeout:        60 * time.Minute,
-	//	Delay:          20 * time.Second,
-	//	MinTimeout:     5 * time.Second,
-	//	PollInterval:   15 * time.Second,
-	//	NotFoundChecks: 3,
-	//}
-	//
-	//_, stateErr := stateConf.WaitForState()
-	//if stateErr != nil {
-	//	return fmt.Errorf(
-	//		"Error waiting for app (%s) to become ready: %s", result, stateErr)
-	//}
+	stateConf := &resource.StateChangeConf{
+		Pending: []string{"Pending"},
+		Target:  []string{"Created"},
+		Refresh: func() (interface{}, string, error) {
+
+			resp, err := apiClient.GetAppStatus(clusterID, appName, auxParams)
+			if err != nil {
+				log.Printf("Error on App status refresh: %s", err)
+				return nil, "", err
+			}
+
+			status := "Pending"
+
+			if resp == "DEPLOYED" {
+				status = "Created"
+			}
+
+			return resp, status, nil
+		},
+		Timeout:        60 * time.Minute,
+		Delay:          20 * time.Second,
+		MinTimeout:     5 * time.Second,
+		PollInterval:   15 * time.Second,
+		NotFoundChecks: 3,
+	}
+
+	resp, stateErr := stateConf.WaitForState()
+	if stateErr != nil {
+		return fmt.Errorf(
+			"Error waiting for app (%s) to become ready: %s", resp, stateErr)
+	}
 
 	return nil
 
 }
 
 func resourceReadApp(d *schema.ResourceData, m interface{}) error {
+
+	apiClient := m.(*client.Wrapper)
+
+	ClusterID := d.Get("cluster_id").(string)
+	appName := d.Get("app_name").(string)
+
+	auxParams := apiClient.DefaultAuxiliaryParams()
+	auxParams.ActivityName = "read-app"
+	app, err := apiClient.GetApp(ClusterID, appName, auxParams)
+	if err != nil {
+		if strings.Contains(err.Error(), "RESOURCE_NOT_FOUND") {
+			d.SetId("")
+		} else {
+			return fmt.Errorf("error finding applicaiton with name %s", appName)
+		}
+	}
+
+	d.Set("app_name", app.Metadata.Name)
+	d.Set("catalog", app.Spec.Catalog)
+	d.Set("name", app.Spec.Name)
+	d.Set("namespace", app.Spec.Namespace)
+	d.Set("version", app.Spec.Version)
 
 	return nil
 }

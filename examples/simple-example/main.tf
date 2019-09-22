@@ -10,7 +10,7 @@ resource "giantswarm_cluster" "test" {
   workers_min = 4 
   workers_max = 7 
 
-  worker_aws_ec2_instance_type = "m5.large" 
+  worker_aws_ec2_instance_type = "m5.xlarge" 
 }
 resource "giantswarm_app" "test_app"{
       cluster_id = "${giantswarm_cluster.test.id}"
@@ -18,8 +18,7 @@ resource "giantswarm_app" "test_app"{
 			catalog = "giantswarm-incubator"
 			name = "kong-app" 
 			namespace = "kong"
-			version = "0.2.4" 
-      count = 0
+			version = "0.2.0" 
 }
 
 # Using Azure example, remove AWS resource
