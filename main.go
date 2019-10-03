@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/ferrandinand/terraform-provider-giantswarm/provider"
+	"github.com/giantswarm/terraform-provider-giantswarm/provider"
 	"github.com/hashicorp/terraform/plugin"
 )
 

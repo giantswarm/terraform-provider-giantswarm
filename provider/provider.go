@@ -23,6 +23,7 @@ func Provider() terraform.ResourceProvider {
 		},
 		ResourcesMap: map[string]*schema.Resource{
 			"giantswarm_cluster": resourceGiantswarmCluster(),
+			"giantswarm_app":     resourceGiantswarmApp(),
 		},
 		ConfigureFunc: providerConfigure,
 	}
@@ -32,9 +33,9 @@ func providerConfigure(d *schema.ResourceData) (interface{}, error) {
 	address := d.Get("address").(string)
 	token := d.Get("token").(string)
 
-	clientV2, err := client.NewWithConfig(address, token)
+	client, err := client.NewWithConfig(address, token)
 	if err != nil {
 		return nil, microerror.Mask(err)
 	}
-	return clientV2, nil
+	return client, nil
 }
