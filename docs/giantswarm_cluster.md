@@ -38,3 +38,6 @@ If you are using on-prem KVM worker_aws_ec2_instance_type and worker_azure_vm_si
 * `ca_cert` - (Computed) Certificate authority data created.
 * `client_cert` - (Computed) Client certificate created.
 * `client_key` - (Computed) Client key created.
+
+### Import
+`terraform import giantswarm_cluster.test YOUR_CLUSTER_ID`
