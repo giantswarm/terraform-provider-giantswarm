@@ -10,7 +10,7 @@ As Giant Swarm provides vainilla kubernetes, kubernetes/helm providers can be us
 - `terraform init`
 
 ## Usage
-Go through the docs section in order to see attributes reference and examples section to see it in action.
+Go through the [docs](https://github.com/giantswarm/terraform-provider-giantswarm/tree/master/docs) section in order to see attributes reference and [examples](https://github.com/giantswarm/terraform-provider-giantswarm/tree/master/examples) section to see it in action.
 
 ### Prerequisites
 - You need a user created in the Giant Swarm installation.
@@ -34,9 +34,6 @@ example:
 export GIANTSWARM_INSTALLATION_ADDRESS="https://GIANTSWARM_INSTALLATION_URL"
 export GIANTSWARM_TOKEN=TOKEN_CREATED
 ```
-
-### Import
-`terraform import giantswarm_cluster.test YOUR_CLUSTER_ID`
 
 ### Examples
 
