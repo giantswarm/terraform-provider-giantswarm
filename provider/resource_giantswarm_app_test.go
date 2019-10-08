@@ -10,6 +10,9 @@ import (
 	"github.com/hashicorp/terraform/terraform"
 )
 
+// Valid cluster where create app tests.
+const clusterID = "pgut4"
+
 func TestAccApp_Basic(t *testing.T) {
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
@@ -23,11 +26,13 @@ func TestAccApp_Basic(t *testing.T) {
 					resource.TestCheckResourceAttr(
 						"giantswarm_app.test_app", "app_name", "kong-app-basic"),
 					resource.TestCheckResourceAttr(
-						"giantswarm_app.test_app", "cluster_id", "0x39t"),
+						"giantswarm_app.test_app", "cluster_id", clusterID),
 					resource.TestCheckResourceAttr(
 						"giantswarm_app.test_app", "version", "0.2.0"),
 					resource.TestCheckResourceAttr(
 						"giantswarm_app.test_app", "namespace", "kong-basic"),
+					resource.TestCheckResourceAttr(
+						"giantswarm_app.test_app", "catalog", "giantswarm-incubator"),
 					resource.TestCheckResourceAttr(
 						"giantswarm_app.test_app", "name", "kong-app"),
 				),
@@ -49,7 +54,7 @@ func TestAccApp_Update(t *testing.T) {
 					resource.TestCheckResourceAttr(
 						"giantswarm_app.test_update", "app_name", "kong-app-update"),
 					resource.TestCheckResourceAttr(
-						"giantswarm_app.test_update", "cluster_id", "0x39t"),
+						"giantswarm_app.test_update", "cluster_id", clusterID),
 					resource.TestCheckResourceAttr(
 						"giantswarm_app.test_update", "version", "0.1.0"),
 					resource.TestCheckResourceAttr(
@@ -65,7 +70,7 @@ func TestAccApp_Update(t *testing.T) {
 					resource.TestCheckResourceAttr(
 						"giantswarm_app.test_update", "app_name", "kong-app-update"),
 					resource.TestCheckResourceAttr(
-						"giantswarm_app.test_update", "cluster_id", "0x39t"),
+						"giantswarm_app.test_update", "cluster_id", clusterID),
 					resource.TestCheckResourceAttr(
 						"giantswarm_app.test_update", "version", "0.2.0"),
 					resource.TestCheckResourceAttr(
@@ -104,11 +109,11 @@ func testAccCheckAppDestroy(s *terraform.State) error {
 		}
 
 		auxParams := apiClient.DefaultAuxiliaryParams()
-		auxParams.ActivityName = "read-app"
+		auxParams.ActivityName = "detroy-app"
 
-		_, err := apiClient.GetApp("0x39t", rs.Primary.ID, auxParams)
+		_, err := apiClient.GetApp(clusterID, rs.Primary.ID, auxParams)
 		if err == nil {
-			return fmt.Errorf("Alert still exists")
+			return fmt.Errorf("App still exists")
 		}
 		notFoundErr := "not found"
 		expectedErr := regexp.MustCompile(notFoundErr)
@@ -134,7 +139,7 @@ func testAccCheckExampleAppExists(resource string) resource.TestCheckFunc {
 		auxParams := apiClient.DefaultAuxiliaryParams()
 		auxParams.ActivityName = "read-app"
 
-		_, err := apiClient.GetApp("0x39t", name, auxParams)
+		_, err := apiClient.GetApp(clusterID, name, auxParams)
 		if err != nil {
 			return fmt.Errorf("error fetching App with resource %s. %s", resource, err)
 		}
@@ -158,7 +163,7 @@ resource "giantswarm_app" "test_app"{
 func testAccCheckAppUpdatePre() string {
 	return fmt.Sprintf(`
 resource "giantswarm_app" "test_update"{
-	cluster_id = "0x39t"
+	cluster_id = "2v36m"
 	app_name = "kong-app-update"
 	catalog = "giantswarm-incubator"
 	name = "kong-app" 
@@ -171,7 +176,7 @@ resource "giantswarm_app" "test_update"{
 func testAccCheckAppUpdatePost() string {
 	return fmt.Sprintf(`
 resource "giantswarm_app" "test_update"{
-	cluster_id = "0x39t"
+	cluster_id = "2v36m"
 	app_name = "kong-app-update"
 	catalog = "giantswarm-incubator"
 	name = "kong-app" 
@@ -184,7 +189,7 @@ resource "giantswarm_app" "test_update"{
 func testAccCheckAppMultiple() string {
 	return fmt.Sprintf(`
 resource "giantswarm_app" "test_app_mult"{
-    cluster_id = "0x39t"
+    cluster_id = "2v36m"
   	app_name = "kong-app-mult"
 	catalog = "giantswarm-incubator"
 	name = "kong-app" 
@@ -192,12 +197,12 @@ resource "giantswarm_app" "test_app_mult"{
 	version = "0.2.0" 
 }
 resource "giantswarm_app" "test_app_mult2"{
-    cluster_id = "0x39t"
+    cluster_id = "2v36m"
   	app_name = "kong-app-mult2"
 	catalog = "giantswarm-incubator"
 	name = "kong-app" 
-	namespace = "kong-mult"
-	version = "0.1.0" 
+	namespace = "kong-mult2"
+	version = "0.2.0" 
 }
 `)
 }
