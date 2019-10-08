@@ -21,25 +21,15 @@ func TestAccCluster_Basic(t *testing.T) {
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckExampleClusterExists("giantswarm_cluster.test"),
 					resource.TestCheckResourceAttr(
-						"giantswarm_cluster.test", "name", "test_cluster"),
+						"giantswarm_cluster.test", "name", "Ferran test_cluster"),
 					resource.TestCheckResourceAttr(
 						"giantswarm_cluster.test", "owner", "giantswarm"),
 					resource.TestCheckResourceAttr(
 						"giantswarm_cluster.test", "release_version", "8.5.0"),
 					resource.TestCheckResourceAttr(
-						"giantswarm_cluster.test", "availability_zones", "1"),
+						"giantswarm_cluster.test", "workers_min", "2"),
 					resource.TestCheckResourceAttr(
-						"giantswarm_cluster.test", "workers_min", "3"),
-					resource.TestCheckResourceAttr(
-						"giantswarm_cluster.test", "workers_max", "3"),
-					resource.TestCheckResourceAttr(
-						"giantswarm_cluster.test", "worker_num_cpus", ""),
-					resource.TestCheckResourceAttr(
-						"giantswarm_cluster.test", "worker_storage_size", ""),
-					resource.TestCheckResourceAttr(
-						"giantswarm_cluster.test", "worker_memory_size", ""),
-					resource.TestCheckResourceAttr(
-						"giantswarm_cluster.test", "worker_aws_ec2_instance_type", ""),
+						"giantswarm_cluster.test", "workers_max", "2"),
 					resource.TestCheckResourceAttr(
 						"giantswarm_cluster.test", "worker_azure_vm_size", "Standard_D2s_v3"),
 				),
@@ -57,29 +47,19 @@ func TestAccCluster_Update(t *testing.T) {
 			{
 				Config: testAccCheckClusterUpdatePre(),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckExampleClusterExists("giantswarm_cluster.test"),
+					testAccCheckExampleClusterExists("giantswarm_cluster.test2"),
 					resource.TestCheckResourceAttr(
-						"giantswarm_cluster.test_update", "name", "tf_test_cluster"),
+						"giantswarm_cluster.test2", "name", "Ferran test_cluster update"),
 					resource.TestCheckResourceAttr(
-						"giantswarm_cluster.test_update", "owner", "giantswarm"),
+						"giantswarm_cluster.test2", "owner", "giantswarm"),
 					resource.TestCheckResourceAttr(
-						"giantswarm_cluster.test_update", "release_version", "8.4.0"),
+						"giantswarm_cluster.test2", "release_version", "8.5.0"),
 					resource.TestCheckResourceAttr(
-						"giantswarm_cluster.test_update", "availability_zones", "1"),
+						"giantswarm_cluster.test2", "workers_min", "2"),
 					resource.TestCheckResourceAttr(
-						"giantswarm_cluster.test_update", "workers_min", "3"),
+						"giantswarm_cluster.test2", "workers_max", "2"),
 					resource.TestCheckResourceAttr(
-						"giantswarm_cluster.test_update", "workers_max", "3"),
-					resource.TestCheckResourceAttr(
-						"giantswarm_cluster.test_update", "worker_num_cpus", ""),
-					resource.TestCheckResourceAttr(
-						"giantswarm_cluster.test_update", "worker_storage_size", ""),
-					resource.TestCheckResourceAttr(
-						"giantswarm_cluster.test_update", "worker_memory_size", ""),
-					resource.TestCheckResourceAttr(
-						"giantswarm_cluster.test_update", "worker_aws_ec2_instance_type", ""),
-					resource.TestCheckResourceAttr(
-						"giantswarm_cluster.test_update", "worker_azure_vm_size", "Standard_D2s_v3"),
+						"giantswarm_cluster.test2", "worker_azure_vm_size", "Standard_D2s_v3"),
 				),
 			},
 			{
@@ -87,44 +67,17 @@ func TestAccCluster_Update(t *testing.T) {
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckExampleClusterExists("giantswarm_cluster.test2"),
 					resource.TestCheckResourceAttr(
-						"giantswarm_cluster.test_update", "name", "tf_test_cluster_2"),
+						"giantswarm_cluster.test_update", "name", "Ferran test_cluster update"),
 					resource.TestCheckResourceAttr(
 						"giantswarm_cluster.test_update", "owner", "giantswarm"),
 					resource.TestCheckResourceAttr(
 						"giantswarm_cluster.test_update", "release_version", "8.5.0"),
 					resource.TestCheckResourceAttr(
-						"giantswarm_cluster.test_update", "availability_zones", "1"),
+						"giantswarm_cluster.test_update", "workers_min", "3"),
 					resource.TestCheckResourceAttr(
-						"giantswarm_cluster.test_update", "workers_min", "5"),
-					resource.TestCheckResourceAttr(
-						"giantswarm_cluster.test_update", "workers_max", "5"),
-					resource.TestCheckResourceAttr(
-						"giantswarm_cluster.test_update", "worker_num_cpus", ""),
-					resource.TestCheckResourceAttr(
-						"giantswarm_cluster.test_update", "worker_storage_size", ""),
-					resource.TestCheckResourceAttr(
-						"giantswarm_cluster.test_update", "worker_memory_size", ""),
-					resource.TestCheckResourceAttr(
-						"giantswarm_cluster.test_update", "worker_aws_ec2_instance_type", ""),
+						"giantswarm_cluster.test_update", "workers_max", "3"),
 					resource.TestCheckResourceAttr(
 						"giantswarm_cluster.test_update", "worker_azure_vm_size", "Standard_D2s_v3"),
-				),
-			},
-		},
-	})
-}
-
-func TestAccCluster_Multiple(t *testing.T) {
-	resource.Test(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckClusterDestroy,
-		Steps: []resource.TestStep{
-			{
-				Config: testAccCheckClusterMultiple(),
-				Check: resource.ComposeTestCheckFunc(
-					testAccCheckExampleClusterExists("giantswarm_cluster.test"),
-					testAccCheckExampleClusterExists("giantswarm_cluster.test2"),
 				),
 			},
 		},
@@ -183,58 +136,37 @@ func testAccCheckClusterBasic() string {
 	return fmt.Sprintf(`
 resource "giantswarm_cluster" "test" {
   owner = "giantswarm"
-  name = "tf_test_cluster"
-  release_version= "8.6.0"
-  workers_min = 3
-  workers_max = 3
-  worker_aws_ec2_instance_type = "Standard_D2s_v3"
+  name = "Ferran test_cluster"
+  release_version= "8.5.0"
+  workers_min = 2
+  workers_max = 2
+  worker_azure_vm_size = "Standard_D2s_v3"
 }
 `)
 }
 
 func testAccCheckClusterUpdatePre() string {
 	return fmt.Sprintf(`
-resource "giantswarm_cluster" "test" {
+resource "giantswarm_cluster" "test2" {
 	owner = "giantswarm"
-	name = "tf_test_cluster"
-	release_version= "8.4.0"
-	workers_min = 3
-	workers_max = 3
-	worker_aws_ec2_instance_type = "Standard_D2s_v3"
+	name = "Ferran test_cluster update"
+	release_version= "8.5.0"
+	workers_min = 2
+	workers_max = 2
+	worker_azure_vm_size = "Standard_D2s_v3"
 }
 `)
 }
 
 func testAccCheckClusterUpdatePost() string {
 	return fmt.Sprintf(`
-resource "giantswarm_cluster" "test" {
-	owner = "giantswarm"
-	name = "tf_test_cluster_2"
-	release_version= "8.5.0"
-	workers_min = 5
-	workers_max = 5
-	worker_aws_ec2_instance_type = "Standard_D2s_v3"
-}
-`)
-}
-
-func testAccCheckClusterMultiple() string {
-	return fmt.Sprintf(`
-resource "giantswarm_cluster" "test" {
-  owner = "giantswarm"
-  name = "tf_test_cluster"
-  release_version= "8.5.0"
-  workers_min = 3
-  workers_max = 3
-  worker_aws_ec2_instance_type = "Standard_D2s_v3"
-}
 resource "giantswarm_cluster" "test2" {
-  owner = "giantswarm"
-  name = "tf_test_cluster"
-  release_version= "8.5.0"
-  workers_min = 3
-  workers_max = 3
-  worker_aws_ec2_instance_type = "Standard_D2s_v3"
+	owner = "giantswarm"
+	name = "Ferran test_cluster update"
+	release_version= "8.5.0"
+	workers_min = 3
+	workers_max = 3
+	worker_azure_vm_size = "Standard_D2s_v3"
 }
 `)
 }
