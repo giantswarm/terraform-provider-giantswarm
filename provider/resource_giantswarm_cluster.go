@@ -123,7 +123,7 @@ func resourceGiantswarmCluster() *schema.Resource {
 }
 
 // creates a models.V4AddClusterRequest from clusterDefinition
-func createAddClusterBody(d types.ClusterDefinition) *models.V4AddClusterRequest {
+func createAddClusterBody(d types.ClusterDefinitionV4) *models.V4AddClusterRequest {
 	a := &models.V4AddClusterRequest{}
 	a.AvailabilityZones = int64(d.AvailabilityZones)
 	a.Name = d.Name
@@ -157,7 +157,7 @@ func resourceCreateCluster(d *schema.ResourceData, m interface{}) error {
 		// location to fetch details on new cluster from
 		location string
 		// cluster definition assembled
-		definition types.ClusterDefinition
+		definition types.ClusterDefinitionV4
 	}
 	result := creationResult
 
@@ -180,7 +180,7 @@ func resourceCreateCluster(d *schema.ResourceData, m interface{}) error {
 
 	workers = append(workers, worker)
 
-	clusterDefinition := types.ClusterDefinition{
+	clusterDefinition := types.ClusterDefinitionV4{
 		Name:              d.Get("name").(string),
 		Owner:             d.Get("owner").(string),
 		ReleaseVersion:    d.Get("release_version").(string),
@@ -195,7 +195,7 @@ func resourceCreateCluster(d *schema.ResourceData, m interface{}) error {
 	auxParams.ActivityName = createClusterActivityName
 
 	addClusterBody := createAddClusterBody(result.definition)
-	response, err := apiClient.CreateCluster(addClusterBody, auxParams)
+	response, err := apiClient.CreateClusterV4(addClusterBody, auxParams)
 
 	if err != nil {
 		return fmt.Errorf("Error creating cluster %s", err)
@@ -340,7 +340,7 @@ func resourceUpdateCluster(d *schema.ResourceData, m interface{}) error {
 		ReleaseVersion: d.Get("release_version").(string),
 		Scaling:        &scaling,
 	}
-	_, err := apiClient.ModifyCluster(ClusterID, clusterDefinition, auxParams)
+	_, err := apiClient.ModifyClusterV4(ClusterID, clusterDefinition, auxParams)
 	if err != nil {
 		return fmt.Errorf("error upgrading %s cluster", ClusterID)
 	}
